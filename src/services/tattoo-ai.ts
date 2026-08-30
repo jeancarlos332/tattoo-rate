@@ -55,8 +55,8 @@ async function loadModel(
         {
           device: "webgpu",
           dtype: {
-            embed_tokens: "fp16",
-            vision_encoder: "fp16",
+            embed_tokens: "q4f16",
+            vision_encoder: "q4f16",
             decoder_model_merged: "q4f16",
           },
         },
