@@ -5,7 +5,7 @@ import { ImageUploader } from "./components/ImageUploader";
 import { SizeInput } from "./components/SizeInput";
 import { QuoteResult } from "./components/QuoteResult";
 
-import { analyzeTattoo } from "./services/tattoo-ai";
+import { analyzeTattoo, type AIStatus } from "./services/tattoo-ai";
 import { calculateQuote } from "./services/pricing";
 
 import {
@@ -33,6 +33,7 @@ function App() {
   const [coverage, setCoverage] = useState<TattooCoverage>("medium");
 
   type BodyBuild = "slim" | "normal" | "thick";
+  const [aiStatus, setAiStatus] = useState<AIStatus | null>(null);
 
   const [bodyBuild, setBodyBuild] = useState<BodyBuild>("normal");
 
@@ -91,7 +92,9 @@ function App() {
        * Analizamos primero la referencia
        * con la IA.
        */
-      const result = await analyzeTattoo(image);
+      const result = await analyzeTattoo(image, (message) => {
+        setAiStatus(message);
+      });
 
       setAnalysis(result);
 
@@ -105,8 +108,7 @@ function App() {
        * - tamaño cuando corresponda
        * - análisis IA
        */
-    const calculatedQuote =
-      calculateQuote({
+      const calculatedQuote = calculateQuote({
         size,
         analysis: result,
         zone,
@@ -422,6 +424,30 @@ function App() {
                 )}
               </button>
             </>
+          )}
+
+          {aiStatus && (
+            <div className="mt-4 rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+              <p className="text-sm font-medium text-white">
+                {aiStatus === "loading-processor" &&
+                  "🧠 Preparando procesador de IA..."}
+
+                {aiStatus === "loading-model" &&
+                  "⬇️ Preparando modelo de IA... Esto puede tardar la primera vez."}
+
+                {aiStatus === "model-ready" &&
+                  "✅ Inteligencia artificial lista."}
+
+                {aiStatus === "loading-image" && "🖼️ Preparando imagen..."}
+
+                {aiStatus === "analyzing" && "🔍 Analizando tatuaje..."}
+
+                {aiStatus === "completed" && "✅ Análisis completado."}
+
+                {aiStatus === "error" &&
+                  "❌ Ocurrió un error al analizar el tatuaje."}
+              </p>
+            </div>
           )}
 
           {/* RESULTADO */}

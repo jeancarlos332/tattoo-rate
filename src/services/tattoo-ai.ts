@@ -13,7 +13,18 @@ let processor: any = null;
 let model: any = null;
 let loadingPromise: Promise<void> | null = null;
 
-async function loadModel(): Promise<void> {
+export type AIStatus =
+  | "loading-processor"
+  | "loading-model"
+  | "model-ready"
+  | "loading-image"
+  | "analyzing"
+  | "completed"
+  | "error";
+
+async function loadModel(
+  onStatus?: (status: AIStatus) => void,
+): Promise<void> {
   if (processor && model) {
     return;
   }
@@ -23,6 +34,7 @@ async function loadModel(): Promise<void> {
   }
 
   loadingPromise = (async () => {
+    onStatus?.("loading-processor");
     console.log("Cargando procesador Qwen3-VL...");
 
     processor =
@@ -31,6 +43,7 @@ async function loadModel(): Promise<void> {
       );
 
     console.log("Procesador cargado.");
+    onStatus?.("loading-model");
 
     console.log(
       "Cargando Qwen3-VL-2B en WebGPU...",
@@ -50,6 +63,7 @@ async function loadModel(): Promise<void> {
       );
 
     console.log("Modelo Qwen3-VL cargado.");
+    onStatus?.("model-ready");
   })();
 
   try {
@@ -616,8 +630,9 @@ Use EXACTLY this structure:
 
 export async function analyzeTattoo(
   file: File,
+  onStatus?: (status: AIStatus) => void,
 ): Promise<TattooAnalysis> {
-  await loadModel();
+  await loadModel(onStatus);
 
   if (!processor || !model) {
     throw new Error(
@@ -626,6 +641,7 @@ export async function analyzeTattoo(
   }
 
   try {
+    onStatus?.("loading-image");
     console.log(
       "Cargando imagen para Qwen3-VL...",
     );
@@ -744,6 +760,7 @@ export async function analyzeTattoo(
      * No queremos creatividad.
      * Queremos una evaluación consistente.
      */
+    onStatus?.("analyzing");
     const output =
       await model.generate({
         ...inputs,
@@ -806,10 +823,15 @@ export async function analyzeTattoo(
       generatedText,
     );
 
-    return parseAnalysis(
+    const result = parseAnalysis(
       generatedText,
     );
+
+    onStatus?.("completed");
+
+    return result;
   } catch (error) {
+    onStatus?.("error");
     console.error(
       "Error analizando tatuaje:",
       error,
