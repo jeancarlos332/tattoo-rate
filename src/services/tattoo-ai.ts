@@ -73,17 +73,26 @@ async function loadModel(
   }
 }
 
-export async function testQwenModel(): Promise<string> {
+export async function testQwenModel(
+  onProgress?: (message: string) => void,
+): Promise<string> {
   try {
+    onProgress?.("1️⃣ Iniciando carga de Qwen...");
+
     await loadModel();
+
+    onProgress?.("2️⃣ Modelo cargado.");
 
     return "✅ Qwen3-VL se cargó correctamente.";
   } catch (error) {
-    return `❌ Error cargando Qwen3-VL: ${
+    const message =
       error instanceof Error
         ? error.message
-        : String(error)
-    }`;
+        : String(error);
+
+    onProgress?.(`❌ Error: ${message}`);
+
+    return `❌ Error cargando Qwen3-VL: ${message}`;
   }
 }
 const PROMPT = `

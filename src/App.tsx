@@ -449,7 +449,12 @@ function App() {
           <button
             type="button"
             onClick={async () => {
-              const result = await testQwenModel();
+              alert("1️⃣ El botón funciona");
+
+              const result = await testQwenModel((message) => {
+                alert(message);
+              });
+
               alert(result);
             }}
             className="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white"
