@@ -8,6 +8,7 @@ import { QuoteResult } from "./components/QuoteResult";
 import { analyzeTattoo, type AIStatus } from "./services/tattoo-ai";
 import { calculateQuote } from "./services/pricing";
 import { testWebGPU } from "./utils/webgpu-test";
+import { testQwenModel } from "./services/tattoo-ai";
 
 import {
   type TattooZone,
@@ -444,6 +445,17 @@ function App() {
               {gpuTest.join("\n")}
             </pre>
           )}
+
+          <button
+            type="button"
+            onClick={async () => {
+              const result = await testQwenModel();
+              alert(result);
+            }}
+            className="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white"
+          >
+            Probar carga de IA
+          </button>
 
           {aiStatus && (
             <div className="mt-4 rounded-2xl border border-zinc-800 bg-zinc-900 p-4">

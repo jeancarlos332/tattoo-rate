@@ -73,6 +73,19 @@ async function loadModel(
   }
 }
 
+export async function testQwenModel(): Promise<string> {
+  try {
+    await loadModel();
+
+    return "✅ Qwen3-VL se cargó correctamente.";
+  } catch (error) {
+    return `❌ Error cargando Qwen3-VL: ${
+      error instanceof Error
+        ? error.message
+        : String(error)
+    }`;
+  }
+}
 const PROMPT = `
 You are a professional tattoo artist and tattoo production specialist.
 
