@@ -7,6 +7,7 @@ import { QuoteResult } from "./components/QuoteResult";
 
 import { analyzeTattoo, type AIStatus } from "./services/tattoo-ai";
 import { calculateQuote } from "./services/pricing";
+import { testWebGPU } from "./utils/webgpu-test";
 
 import {
   type TattooZone,
@@ -24,6 +25,7 @@ import type {
 } from "./types/tattoo";
 
 function App() {
+  const [gpuTest, setGpuTest] = useState<string[]>([]);
   const [image, setImage] = useState<File | null>(null);
 
   const [zone, setZone] = useState<TattooZone>("wrist_to_elbow");
@@ -424,6 +426,23 @@ function App() {
                 )}
               </button>
             </>
+          )}
+
+          <button
+            type="button"
+            onClick={async () => {
+              const result = await testWebGPU();
+              setGpuTest(result);
+            }}
+            className="mt-4 rounded-xl bg-blue-600 px-4 py-3 text-white"
+          >
+            Probar WebGPU
+          </button>
+
+          {gpuTest.length > 0 && (
+            <pre className="mt-4 whitespace-pre-wrap rounded-xl bg-zinc-900 p-4 text-xs text-white">
+              {gpuTest.join("\n")}
+            </pre>
           )}
 
           {aiStatus && (
