@@ -7,8 +7,6 @@ import { QuoteResult } from "./components/QuoteResult";
 
 import { analyzeTattoo, type AIStatus } from "./services/tattoo-ai";
 import { calculateQuote } from "./services/pricing";
-import { testWebGPU } from "./utils/webgpu-test";
-import { testQwenModel } from "./services/tattoo-ai";
 
 import {
   type TattooZone,
@@ -26,7 +24,6 @@ import type {
 } from "./types/tattoo";
 
 function App() {
-  const [gpuTest, setGpuTest] = useState<string[]>([]);
   const [image, setImage] = useState<File | null>(null);
 
   const [zone, setZone] = useState<TattooZone>("wrist_to_elbow");
@@ -428,39 +425,6 @@ function App() {
               </button>
             </>
           )}
-
-          <button
-            type="button"
-            onClick={async () => {
-              const result = await testWebGPU();
-              setGpuTest(result);
-            }}
-            className="mt-4 rounded-xl bg-blue-600 px-4 py-3 text-white"
-          >
-            Probar WebGPU
-          </button>
-
-          {gpuTest.length > 0 && (
-            <pre className="mt-4 whitespace-pre-wrap rounded-xl bg-zinc-900 p-4 text-xs text-white">
-              {gpuTest.join("\n")}
-            </pre>
-          )}
-
-          <button
-            type="button"
-            onClick={async () => {
-              alert("1️⃣ El botón funciona");
-
-              const result = await testQwenModel((message) => {
-                alert(message);
-              });
-
-              alert(result);
-            }}
-            className="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white"
-          >
-            Probar carga de IA
-          </button>
 
           {aiStatus && (
             <div className="mt-4 rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
