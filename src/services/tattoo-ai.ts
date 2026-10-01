@@ -1,6 +1,6 @@
 import type { TattooAnalysis } from "../types/tattoo";
 
-const API_URL = "https://andrews-sql-columns-specs.trycloudflare.com ";
+const API_URL = "https://andrews-sql-columns-specs.trycloudflare.com";
 
 export type AIStatus =
   | "loading-processor"
