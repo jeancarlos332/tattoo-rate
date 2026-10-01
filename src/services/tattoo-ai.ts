@@ -1,6 +1,6 @@
 import type { TattooAnalysis } from "../types/tattoo";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.API_URL;
 
 export type AIStatus =
   | "loading-processor"
