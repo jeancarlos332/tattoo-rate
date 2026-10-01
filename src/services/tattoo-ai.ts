@@ -1,6 +1,6 @@
 import type { TattooAnalysis } from "../types/tattoo";
 
-const API_URL = "https://basically-implementation-dating-present.trycloudflare.com";
+const API_URL = "https://stranger-duo-bought-fate.trycloudflare.com";
 
 export type AIStatus =
   | "loading-processor"
