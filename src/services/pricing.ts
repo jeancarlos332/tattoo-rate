@@ -144,6 +144,9 @@ function getStyleFactor(style: TattooAnalysis["style"]): number {
 /**
  * Convierte el análisis de IA
  * en un factor de trabajo.
+ *
+ * La IA influye en el precio,
+ * pero de forma moderada.
  */
 function getDesignFactor(analysis: TattooAnalysis): {
   factor: number;
@@ -167,45 +170,50 @@ function getDesignFactor(analysis: TattooAnalysis): {
   const line = normalize10(analysis.lineComplexity);
 
   /**
-   * colorComplexity actualmente
-   * viene de 0-10 desde la IA.
+   * colorComplexity viene de la IA
+   * en una escala de 0-3.
    */
-  const color = clamp(analysis.colorComplexity / 10, 0, 1);
+  const color = clamp(analysis.colorComplexity / 3, 0, 1);
 
   const elements = clamp((analysis.elementCount - 1) / 9, 0, 1);
 
   const styleFactor = getStyleFactor(analysis.style);
 
+  /**
+   * Pesos reducidos para evitar
+   * que la IA eleve demasiado
+   * el precio base de la zona.
+   */
   const factor =
     1 +
-    complexity * 0.22 +
-    detail * 0.15 +
-    shading * 0.1 +
-    ink * 0.08 +
-    color * 0.08 +
-    line * 0.08 +
-    elements * 0.07;
+    complexity * 0.14 +
+    detail * 0.08 +
+    shading * 0.06 +
+    ink * 0.04 +
+    color * 0.04 +
+    line * 0.04 +
+    elements * 0.04;
 
   const combined = factor * styleFactor;
 
   return {
-    factor: clamp(combined, 0.8, 1.65),
+    factor: clamp(combined, 0.8, 1.45),
 
-    complexityFactor: 1 + complexity * 0.22,
+    complexityFactor: 1 + complexity * 0.14,
 
-    detailFactor: 1 + detail * 0.15,
+    detailFactor: 1 + detail * 0.08,
 
-    shadingFactor: 1 + shading * 0.1,
+    shadingFactor: 1 + shading * 0.06,
 
-    inkFactor: 1 + ink * 0.08,
+    inkFactor: 1 + ink * 0.04,
 
-    colorFactor: 1 + color * 0.08,
+    colorFactor: 1 + color * 0.04,
 
-    lineFactor: 1 + line * 0.08,
+    lineFactor: 1 + line * 0.04,
 
     styleFactor,
 
-    elementFactor: 1 + elements * 0.07,
+    elementFactor: 1 + elements * 0.04,
   };
 }
 
@@ -341,8 +349,8 @@ export function calculateQuote({
    * IA
    * =====================================================
    *
-   * Aquí es donde realmente entra
-   * la complejidad artística.
+   * Aquí entra la complejidad artística,
+   * pero con un impacto moderado.
    */
   price *= design.factor;
 
@@ -357,10 +365,6 @@ export function calculateQuote({
    *
    * Solo hacemos una pequeña diferencia
    * para zonas donde existe exterior/interior.
-   *
-   * Las zonas completas no deberían
-   * siquiera enviar un lado relevante,
-   * pero dejamos la protección aquí.
    */
   if (side === "inner" && zone !== "custom") {
     price *= 0.97;
@@ -379,7 +383,10 @@ export function calculateQuote({
   /**
    * Rango estimado.
    */
-  const minPrice = Math.max(MIN_TATTOO_PRICE, roundPrice(suggestedPrice * 0.9));
+  const minPrice = Math.max(
+    MIN_TATTOO_PRICE,
+    roundPrice(suggestedPrice * 0.9),
+  );
 
   const maxPrice = roundPrice(suggestedPrice * 1.1);
 
